@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h2>Admin Panel - Add Room</h2>
+    <form method="POST">
+        <input type="text" name="type" placeholder="Room Type" required>
+        <input type="text" name="status" placeholder="Status (available/booked)" required>
+        <button type="submit">Add Room</button>
+    </form>
+
+    <h3>All Rooms</h3>
+    <ul>
+        {% for room in rooms %}
+            <li>Room {{ room[0] }} - Type: {{ room[1] }} - Status: {{ room[2] }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="/dashboard">Back to Dashboard</a> | 
+    <a href="/logout">Logout</a>
+</div>
+</body>
+</html>

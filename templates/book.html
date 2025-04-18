@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book Room</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h2>Book Room {{ room[0] }} ({{ room[1] }})</h2>
+    <form method="POST">
+        <label>Your Name:</label>
+        <input type="text" name="name" required><br>
+        <label>Booking Date:</label>
+        <input type="date" name="date" required><br>
+        <button type="submit">Confirm Booking</button>
+    </form>
+    <a href="/dashboard">Back</a>
+</div>
+</body>
+</html>
