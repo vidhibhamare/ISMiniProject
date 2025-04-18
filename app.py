@@ -88,6 +88,25 @@ def login():
         return "Login Failed"
     return render_template('login.html')
 
+# New vulnerable login route
+@app.route('/vulnerable_login', methods=['GET', 'POST'])
+def vulnerable_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        conn = sqlite3.connect('hotel.db')
+        c = conn.cursor()
+        # UNSAFE: String concatenation (SQLi vulnerable)
+        query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+        c.execute(query)
+        user = c.fetchone()
+        conn.close()
+        if user:
+            session['user_id'] = user[0]
+            return redirect(url_for('dashboard'))
+        return "Login Failed"
+    return render_template('login.html', vulnerable=True)
+
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:

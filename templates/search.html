@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search</title>
+</head>
+<body>
+    <h1>Insecure Search (XSS Demo)</h1>
+    <form action="/search">
+        Search: <input type="text" name="q">
+        <input type="submit" value="Search">
+    </form>
+    <p>Try: <code>&lt;script&gt;alert('Hacked!')&lt;/script&gt;</code></p>
+</body>
+</html>

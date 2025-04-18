@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vulnerable Login</title>
+</head>
+<body>
+    <h1>Vulnerable Login (SQLi Demo)</h1>
+    <form method="POST">
+        Username: <input type="text" name="username"><br>
+        Password: <input type="password" name="password"><br>
+        <input type="submit" value="Login">
+    </form>
+    <h3>Try these attacks:</h3>
+    <ul>
+        <li>Username: <code>' OR '1'='1' --</code></li>
+        <li>Username: <code>admin' --</code> (empty password)</li>
+    </ul>
+    <p><a href="/">Back to home</a></p>
+</body>
+</html>
