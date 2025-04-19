@@ -162,6 +162,18 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
+# Insecure XSS route
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '')
+    return render_template('search.html', query=query)
+
+# Secure XSS route
+@app.route('/search_secure', methods=['GET'])
+def search_secure():
+    query = request.args.get('q', '')
+    return render_template('search_secure.html', query=query)
+
 if __name__ == '__main__':
     init_db()
     app.run(debug=True)
