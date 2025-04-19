@@ -1,20 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Book Room</title>
+    <title>Book room</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='book_bg.jpg') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h2>Book Room {{ room[0] }} ({{ room[1] }})</h2>
+    <h2 style="color: #d6d6d6;">Booking for Room {{ room[0] }} - {{ room[1] }}</h2>
     <form method="POST">
-        <label>Your Name:</label>
-        <input type="text" name="name" required><br>
-        <label>Booking Date:</label>
-        <input type="date" name="date" required><br>
-        <button type="submit">Confirm Booking</button>
+        <label style="color: #d6d6d6;">Number of People:</label>
+        <input type="number" name="people" required><br>
+        <label style="color: #d6d6d6;">Number of Rooms:</label>
+        <input type="number" name="num_rooms" required><br>
+        <label style="color: #d6d6d6;">Start Date:</label>
+        <input type="date" name="start_date" required><br>
+        <label style="color: #d6d6d6;">End Date:</label>
+        <input type="date" name="end_date" required><br>
+        <input type="hidden" name="room_id" value="{{ room[0] }}">
+        <button type="submit">Proceed to Payment</button>
     </form>
-    <a href="/dashboard">Back</a>
+    <a href="/dashboard">Cancel</a>
 </div>
 </body>
 </html>
