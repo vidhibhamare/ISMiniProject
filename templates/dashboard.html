@@ -3,10 +3,40 @@
 <head>
     <title>Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='dash_bg.jpg') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: rgba(1, 1, 1, 0.85);
+            max-width: 500px;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(214, 212, 212, 0.2);
+            text-align: center;
+        }
+        a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h2>Available Rooms</h2>
+    <h2 style="color: #d6d6d6;">Available Rooms</h2>
     <ul>
         {% for room in rooms %}
             <li>
@@ -14,6 +44,11 @@
                 {% if room[2] == 'available' %}
                     <form method="GET" action="/book/{{ room[0] }}" style="display:inline;">
                         <button type="submit">Book</button>
+                    </form>
+                {% elif room[2] == 'booked' and room[0] in user_booked_room_ids %}
+                    <form method="POST" action="/unbook" style="display:inline;">
+                        <input type="hidden" name="room_id" value="{{ room[0] }}">
+                        <button type="submit">Cancel Booking</button>
                     </form>
                 {% endif %}
             </li>

@@ -3,10 +3,22 @@
 <head>
     <title>Hotel Home</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='hotel_bg.jpg') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
-    <h1>Welcome to the Hotel Booking System</h1>
+    <h1 style="color: #d6d6d6;">Welcome to the Hotel Booking System</h1>
     <a href="/login">Login</a> | 
     <a href="/vulnerable_login">Vulnerable Login</a> |
     <a href="/register">Register</a>

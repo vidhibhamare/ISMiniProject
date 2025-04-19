@@ -34,21 +34,24 @@ def init_db():
         room_id INTEGER,
         date TEXT)''')
 
-    # Demo admin user
+    # Clear previous data and insert demo
+    cur.execute("DELETE FROM bookings")
+    cur.execute("DELETE FROM rooms")
+    demo_rooms = [
+        ('Single', 'booked'),
+        ('Double', 'available'),
+        ('Suite', 'available'),
+        ('Deluxe', 'available'),
+        ('Deluxe', 'available')
+    ]
+    cur.executemany("INSERT INTO rooms (type, status) VALUES (?, ?)", demo_rooms)
+
     cur.execute("SELECT COUNT(*) FROM users")
     if cur.fetchone()[0] == 0:
         cur.execute("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", ('admin', 'admin', 'admin'))
 
-    # Demo rooms
-    cur.execute("SELECT COUNT(*) FROM rooms")
-    if cur.fetchone()[0] == 0:
-        demo_rooms = [
-            ('Single', 'available'),
-            ('Double', 'available'),
-            ('Suite', 'booked'),
-            ('Deluxe', 'available')
-        ]
-        cur.executemany("INSERT INTO rooms (type, status) VALUES (?, ?)", demo_rooms)
+    # Assign first room as booked by user_id=1
+    cur.execute("INSERT INTO bookings (user_id, room_id, date) VALUES (?, ?, DATE('now'))", (1, 1))
 
     con.commit()
     con.close()
@@ -115,8 +118,10 @@ def dashboard():
     cur = con.cursor()
     cur.execute("SELECT * FROM rooms")
     rooms = cur.fetchall()
+    cur.execute("SELECT room_id FROM bookings WHERE user_id=?", (session['user_id'],))
+    user_booked = [row[0] for row in cur.fetchall()]
     con.close()
-    return render_template('dashboard.html', rooms=rooms)
+    return render_template('dashboard.html', rooms=rooms, user_booked_room_ids=user_booked)
 
 @app.route('/book/<int:room_id>', methods=['GET', 'POST'])
 def book_page(room_id):
@@ -129,17 +134,53 @@ def book_page(room_id):
     room = cur.fetchone()
 
     if request.method == 'POST':
-        name = request.form['name']
-        date = request.form['date']
-        user_id = session['user_id']
-        cur.execute("INSERT INTO bookings (user_id, room_id, date) VALUES (?, ?, ?)", (user_id, room_id, date))
-        cur.execute("UPDATE rooms SET status='booked' WHERE id=?", (room_id,))
-        con.commit()
-        con.close()
-        return redirect(url_for('dashboard'))
+        session['booking'] = {
+            'room_id': room_id,
+            'people': request.form['people'],
+            'num_rooms': request.form['num_rooms'],
+            'start_date': request.form['start_date'],
+            'end_date': request.form['end_date']
+        }
+        return redirect(url_for('payment'))
 
     con.close()
     return render_template('book.html', room=room)
+
+@app.route('/payment', methods=['GET', 'POST'])
+def payment():
+    if 'user_id' not in session or 'booking' not in session:
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        room_id = session['booking']['room_id']
+        user_id = session['user_id']
+        con = sqlite3.connect('hotel.db')
+        cur = con.cursor()
+        cur.execute("INSERT INTO bookings (user_id, room_id, date) VALUES (?, ?, DATE('now'))", (user_id, room_id))
+        cur.execute("UPDATE rooms SET status='booked' WHERE id=?", (room_id,))
+        con.commit()
+        con.close()
+        session.pop('booking')
+        return redirect(url_for('dashboard'))
+
+    return render_template('payment.html')
+
+@app.route('/unbook', methods=['POST'])
+def unbook_room():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    room_id = request.form['room_id']
+
+    con = sqlite3.connect('hotel.db')
+    cur = con.cursor()
+    cur.execute("DELETE FROM bookings WHERE user_id=? AND room_id=?", (user_id, room_id))
+    cur.execute("UPDATE rooms SET status='available' WHERE id=?", (room_id,))
+    con.commit()
+    con.close()
+
+    return redirect(url_for('dashboard'))
 
 @app.route('/admin', methods=['GET', 'POST'])
 def admin():

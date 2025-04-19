@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-image: url("{{ url_for('static', filename='pay_bg.jpg') }}");
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        #qr {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+    </style>
+    <script>
+        function showQR() {
+            document.getElementById("qr").style.display = "block";
+        }
+    </script>
+</head>
+<body>
+<div class="container">
+    <h2 style="color: #d6d6d6;">Payment Details</h2>
+    <form method="POST">
+        <label style="color: #d6d6d6;">Name:</label>
+        <input type="text" name="name" required>
+
+        <label style="color: #d6d6d6;">Address:</label>
+        <input type="text" name="address" required>
+
+        <label style="color: #d6d6d6;">Aadhar Number:</label>
+        <input type="text" name="aadhar" required>
+
+        <label style="color: #d6d6d6;">Payment Method:</label>
+        <select name="method" onchange="showQR()" required>
+            <option value="">--Select--</option>
+            <option value="upi">UPI</option>
+            <option value="netbanking">Net Banking</option>
+            <option value="card">Card</option>
+        </select>
+
+        <div id="qr">
+            <br>
+            <img src="{{ url_for('static', filename='demo_qr.png') }}" alt="QR Code" width="200"><br>
+            <button type="submit">Pay</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>
