@@ -65,13 +65,24 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        con = sqlite3.connect('hotel.db')
-        cur = con.cursor()
-        cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
-        con.commit()
-        con.close()
-        return redirect(url_for('login'))
+        
+        try:
+            with sqlite3.connect('hotel.db') as con:
+                cur = con.cursor()
+                cur.execute("INSERT INTO users (username, password) VALUES (?, ?)", (username, password))
+                con.commit()
+            return redirect(url_for('login'))
+        
+        except sqlite3.IntegrityError:
+            # username already exists
+            return "Username already exists!"
+        
+        except sqlite3.OperationalError as e:
+            # handle database locking or other issues
+            return f"Database error: {e}"
+
     return render_template('register.html')
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
