@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
 import os
@@ -214,17 +215,39 @@ def logout():
     session.clear()
     return redirect(url_for('home'))
 
-# Insecure XSS route
 @app.route('/search', methods=['GET'])
 def search():
-    query = request.args.get('q', '')
-    return render_template('search.html', query=query)
+    query = request.args.get('q', '').strip().lower()
+    
+    # Always check database for rooms
+    con = sqlite3.connect('hotel.db')
+    cur = con.cursor()
+    cur.execute("SELECT * FROM rooms WHERE LOWER(type) LIKE ?", (f'%{query}%',))
+    rooms = cur.fetchall()
+    con.close()
+    
+    # Determine if we should demonstrate XSS
+    is_xss = any(tag in query for tag in ['<script>', '<img', '<svg', 'onerror', 'onload'])
+    
+    return render_template('search.html',
+                        query=query,
+                        rooms=rooms,
+                        is_xss_demo=is_xss)
 
-# Secure XSS route
 @app.route('/search_secure', methods=['GET'])
 def search_secure():
-    query = request.args.get('q', '')
-    return render_template('search_secure.html', query=query)
+    query = request.args.get('q', '').strip().lower()
+    
+    # Secure search always escapes output
+    con = sqlite3.connect('hotel.db')
+    cur = con.cursor()
+    cur.execute("SELECT * FROM rooms WHERE LOWER(type) LIKE ?", (f'%{query}%',))
+    rooms = cur.fetchall()
+    con.close()
+    
+    return render_template('search_secure.html',
+                         query=query,
+                         rooms=rooms)
 
 if __name__ == '__main__':
     init_db()

@@ -17,48 +17,179 @@
         .container {
             background-color: rgba(1, 1, 1, 0.85);
             max-width: 500px;
-            margin: 100px auto;
+            margin: 50px auto;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(214, 212, 212, 0.2);
+        }
+        .room-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+            color: #d6d6d6;
+        }
+        .room-item:last-child {
+            border-bottom: none;
+        }
+        .book-btn, .cancel-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .book-btn {
+            background-color: #17a2b8;
+            color: white;
+        }
+        .cancel-btn {
+            background-color: #dc3545;
+            color: white;
+        }
+        .demo-section {
+            background-color: rgba(1, 1, 1, 0.85);
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(214, 212, 212, 0.2);
+        }
+        .nav-links {
             text-align: center;
+            margin-top: 20px;
         }
-        a {
-            margin: 0 10px;
+        .nav-links a {
+            color: #ffc107;
             text-decoration: none;
-            color: #007bff;
-            font-weight: bold;
+            margin: 0 10px;
         }
-        a:hover {
-            text-decoration: underline;
+        .search-box {
+            margin-bottom: 20px;
+        }
+        .search-box h4 {
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+        .search-input {
+            width: 70%;
+            padding: 8px;
+            margin-right: 5px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #444;
+            border-radius: 4px;
+        }
+        .search-btn {
+            padding: 8px 15px;
+            background-color: #17a2b8;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        #insecureResults, #secureResults {
+            margin-top: 10px;
+            color: #d6d6d6;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #insecureResults {
+            border-left: 3px solid #dc3545;
+        }
+        #secureResults {
+            border-left: 3px solid #28a745;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <h2 style="color: #d6d6d6;">Available Rooms</h2>
-    <ul>
+    <h2 style="color: #ffc107; text-align: center;">Available Rooms</h2>
+    
+    <div class="room-listing">
         {% for room in rooms %}
-            <li>
-                Room {{ room[0] }} - Type: {{ room[1] }} - Status: {{ room[2] }}
-                {% if room[2] == 'available' %}
-                    <form method="GET" action="/book/{{ room[0] }}" style="display:inline;">
-                        <button type="submit">Book</button>
-                    </form>
-                {% elif room[2] == 'booked' and room[0] in user_booked_room_ids %}
-                    <form method="POST" action="/unbook" style="display:inline;">
-                        <input type="hidden" name="room_id" value="{{ room[0] }}">
-                        <button type="submit">Cancel Booking</button>
-                    </form>
-                {% endif %}
-            </li>
+        <div class="room-item">
+            <span>Room {{ room[0] }} - Type: {{ room[1] }} - Status: {{ room[2] }}</span>
+            {% if room[2] == 'available' %}
+                <form method="GET" action="/book/{{ room[0] }}" style="display:inline;">
+                    <button type="submit" class="book-btn">Book</button>
+                </form>
+            {% elif room[2] == 'booked' and room[0] in user_booked_room_ids %}
+                <form method="POST" action="/unbook" style="display:inline;">
+                    <input type="hidden" name="room_id" value="{{ room[0] }}">
+                    <button type="submit" class="cancel-btn">Cancel</button>
+                </form>
+            {% endif %}
+        </div>
         {% endfor %}
-    </ul>
-    <br>
-    {% if session.get('role') == 'admin' %}
-        <a href="/admin">Go to Admin Panel</a> |
-    {% endif %}
-    <a href="/logout">Logout</a>
+    </div>
+    
+    <div class="nav-links">
+        {% if session.get('role') == 'admin' %}
+            <a href="/admin">Admin Panel</a>
+        {% endif %}
+        <a href="/logout">Logout</a>
+    </div>
 </div>
+
+<div class="demo-section">
+    <h3 style="color: #ffc107; text-align: center;">Security Demonstrations</h3>
+    
+    <div class="search-box">
+        <h4>Vulnerable Search (XSS)</h4>
+        <form onsubmit="handleInsecureSearch(event)">
+            <input type="text" id="insecureQuery" class="search-input"
+                   placeholder="Try: &lt;img src=x onerror=alert(1)&gt;">
+            <input type="submit" value="Search" class="search-btn">
+        </form>
+        <div id="insecureResults"></div>
+    </div>
+    
+    <div class="search-box">
+        <h4>Secure Search</h4>
+        <form onsubmit="handleSecureSearch(event)">
+            <input type="text" id="secureQuery" class="search-input"
+                   placeholder="Same input will be escaped">
+            <input type="submit" value="Search" class="search-btn">
+        </form>
+        <div id="secureResults"></div>
+    </div>
+</div>
+
+<script>
+    // This will execute XSS payloads immediately
+    function handleInsecureSearch(event) {
+        event.preventDefault();
+        const query = document.getElementById('insecureQuery').value;
+        
+        // METHOD 1: Create element to execute scripts
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = query; // This will execute scripts
+        document.getElementById('insecureResults').appendChild(tempDiv);
+        
+        // METHOD 2: Directly execute script content
+        const scriptMatch = query.match(/<script>(.*?)<\/script>/i);
+        if (scriptMatch) {
+            try {
+                new Function(scriptMatch[1])();
+            } catch(e) { console.error(e); }
+        }
+        
+        // Display what was searched
+        document.getElementById('insecureResults').innerHTML += 
+            `<p>You searched for: ${query}</p>`;
+        
+        return false;
+    }
+
+    // Secure version - no execution
+    function handleSecureSearch(event) {
+        event.preventDefault();
+        const query = document.getElementById('secureQuery').value;
+        document.getElementById('secureResults').textContent = 
+            `You searched for: ${query}`;
+        return false;
+    }
+</script>
 </body>
 </html>

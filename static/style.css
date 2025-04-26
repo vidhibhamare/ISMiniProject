@@ -1,9 +1,11 @@
+/* Base Styles */
 body {
     font-family: Arial, sans-serif;
     background: url("{{ url_for('static', filename='hotel_bg.jpg') }}") no-repeat center center fixed;
     background-size: cover;
     margin: 0;
     padding: 0;
+    color: #d6d6d6;
 }
 
 .container {
@@ -12,77 +14,124 @@ body {
     background: rgba(1, 1, 1, 0.85);
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.3);
 }
 
 h1, h2 {
     text-align: center;
-    color: #333;
+    color: #ffc107;
+    margin-top: 0;
 }
 
+/* Room Listing - Compact Style */
+.room-listing {
+    margin: 25px 0;
+}
+
+.room-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+}
+
+.room-item:last-child {
+    border-bottom: none;
+}
+
+.room-info {
+    flex-grow: 1;
+}
+
+.book-btn {
+    background-color: #17a2b8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-left: 15px;
+}
+
+.book-btn:hover {
+    background-color: #e64a19;
+}
+
+.book-btn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Security Demonstration Section */
+.security-demo {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 2px solid #ffc107;
+}
+
+.security-demo h2 {
+    color: #ffc107;
+    font-size: 1.3em;
+    margin-bottom: 15px;
+}
+
+.demo-box {
+    margin-bottom: 20px;
+}
+
+/* Logout Button */
+.logout-btn {
+    display: inline-block;
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    text-decoration: none;
+    margin-top: 20px;
+    transition: all 0.3s;
+}
+
+.logout-btn:hover {
+    background-color: #c82333;
+}
+
+/* Form Elements */
 form {
     display: flex;
     flex-direction: column;
 }
 
-input, button {
-    margin: 10px 0;
+input[type="text"] {
+    margin: 8px 0;
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #d6d6d6;
+    border: 1px solid #444;
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
 }
 
-button {
-    background-color: #17a2b8;  /* ← pick one from above */
-    color: #d6d6d6;
+input[type="submit"] {
+    background-color: #ffc107;
+    color: #222;
     border: none;
-    padding: 10px 0;
-    font-size: 16px;
+    padding: 10px;
     border-radius: 5px;
-    width: 100%;
     cursor: pointer;
+    font-weight: bold;
     transition: background 0.3s;
 }
 
-button:hover {
-    background-color: #e64a19;  /* Slightly darker on hover */
+input[type="submit"]:hover {
+    background-color: #ffab00;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
-}
-
-li {
-    padding: 8px;
-    margin: 5px 0;
-    background: #d6d6d6;
-    border-radius: 4px;
-}
-
-a,
-a:visited,
-a:focus,
-a:active {
-    color: #ffc107 !important;
-    text-decoration: none;
-    margin: 0 10px;
-}
-
-a:hover {
-    color: #ff5722 !important;
-    text-decoration: underline;
-}
-
-.demo-hint {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #fff3cd;
-    border-left: 5px solid #ffeeba;
-}
-
-.demo-hint code {
-    background-color: #d6d6d6;
-    padding: 2px 4px;
-    border-radius: 3px;
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 20px;
+    }
 }
